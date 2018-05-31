@@ -13,6 +13,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var taskField: UITextField!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var taskList: UITableView!
+    @IBOutlet weak var getTaskButton: UIButton!
     
     var todoList = ["Study swift", "Practice Xcode"]
     
@@ -49,6 +50,43 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             taskField.text = ""
         }
     }
+    @IBAction func getTaskList(_ sender: Any) {
+        todoList.removeAll()
+        let url = URL(string: "https://sleepy-earth-85571.herokuapp.com/tasks")
+        let apiCall = URLSession.shared.dataTask(with: url!) { (data, response, error) in
+            if error != nil {
+                print("Sorry, we had a trouble")
+                self.todoList.append("Sorry, we had a trouble")
+            } else {
+                if let content = data {
+                    do {
+                        let jsonData = try JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers) as AnyObject
+                        print(jsonData)
+                        if let parsedData = jsonData as? NSArray {
+                            print(parsedData)
+                            self.mapDataAPIToList(data: parsedData)
+                        }
+                    } catch {
+                        print("Error on parsing JSON")
+                    }
+                }
+            }
+        }
+        apiCall.resume()
+    }
     
+    func mapDataAPIToList(data: NSArray) {
+        for dataField in data {
+            print(dataField)
+            if let task = dataField as? NSDictionary {
+                print(task)
+                if let taskName = task["name"] as? String {
+                    print(taskName)
+                    todoList.append(taskName)
+                }
+            }
+        }
+        print(todoList)
+    }
 }
 
