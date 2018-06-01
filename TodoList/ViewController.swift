@@ -8,18 +8,26 @@
 
 import UIKit
 
+struct Task: Decodable, Encodable {
+    let id: Int
+    let name: String
+}
+
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var taskField: UITextField!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var taskList: UITableView!
-    @IBOutlet weak var getTaskButton: UIButton!
     
-    var todoList = ["Study swift", "Practice Xcode"]
+    var todoList = [Task]()
+    let apiUrl = URL(string: "https://sleepy-earth-85571.herokuapp.com/tasks")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        todoList.removeAll()
+        getTasks(completed: {
+            self.taskList.reloadData()
+        })
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,65 +36,97 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return(todoList.count)
+        return todoList.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "cell")
-        cell.textLabel?.text = todoList[indexPath.row]
-        return(cell)
+        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
+        let task = todoList[indexPath.row]
+        cell.textLabel?.text = "\(task.id). \(task.name)"
+        return cell
     }
+    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == UITableViewCellEditingStyle.delete {
-            todoList.remove(at: indexPath.row)
-            taskList.reloadData()
+            let task = todoList[indexPath.row]
+            deleteTask(taskId: task.id, completed: {
+                self.todoList.remove(at: indexPath.row)
+                self.taskList.reloadData()
+            })
         }
     }
     
     @IBAction func addTask(_ sender: Any) {
         if taskField.text != "" {
-            todoList.append(taskField.text!)
-            taskList.reloadData()
-            taskField.text = ""
+            let lastId = todoList.last?.id ?? 0
+            let task = Task(id: lastId + 1, name: taskField.text!)
+            addTask(task: task, completed: {
+                self.taskList.reloadData()
+                self.taskField.text = ""
+            })
         }
-    }
-    @IBAction func getTaskList(_ sender: Any) {
-        todoList.removeAll()
-        let url = URL(string: "https://sleepy-earth-85571.herokuapp.com/tasks")
-        let apiCall = URLSession.shared.dataTask(with: url!) { (data, response, error) in
-            if error != nil {
-                print("Sorry, we had a trouble")
-                self.todoList.append("Sorry, we had a trouble")
-            } else {
-                if let content = data {
-                    do {
-                        let jsonData = try JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers) as AnyObject
-                        print(jsonData)
-                        if let parsedData = jsonData as? NSArray {
-                            print(parsedData)
-                            self.mapDataAPIToList(data: parsedData)
-                        }
-                    } catch {
-                        print("Error on parsing JSON")
-                    }
-                }
-            }
-        }
-        apiCall.resume()
     }
     
-    func mapDataAPIToList(data: NSArray) {
-        for dataField in data {
-            print(dataField)
-            if let task = dataField as? NSDictionary {
-                print(task)
-                if let taskName = task["name"] as? String {
-                    print(taskName)
-                    todoList.append(taskName)
+    func getTasks(completed: @escaping () -> ()) {
+        URLSession.shared.dataTask(with: apiUrl!) { (data, _, error) in
+            if error == nil {
+                guard let data = data else { return }
+                do {
+                    self.todoList = try JSONDecoder().decode([Task].self, from: data)
+                    DispatchQueue.main.async {
+                        completed()
+                    }
+                } catch let jsonErr {
+                    print("Error serializing json: ", jsonErr)
                 }
+            } else {
+                print("Sorry, we had a trouble")
             }
+        }.resume()
+    }
+    
+    func addTask(task: Task, completed: @escaping () -> ()) {
+        var request = URLRequest(url: apiUrl!)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        do {
+            request.httpBody = try JSONEncoder().encode(task)
+        } catch let jsonErr {
+            print("Error serializing json: ", jsonErr)
         }
-        print(todoList)
+        URLSession.shared.dataTask(with: request) { (data, _, error) in
+            if error == nil {
+                guard let data = data else { return }
+                do {
+                    let task = try JSONDecoder().decode(Task.self, from: data)
+                    self.todoList.append(task)
+                    DispatchQueue.main.async {
+                        completed()
+                    }
+                } catch let jsonErr {
+                    print("Error serializing json: ", jsonErr)
+                }
+            } else {
+                print("Sorry, we had a trouble")
+            }
+        }.resume()
+    }
+    
+    func deleteTask(taskId: Int, completed: @escaping () -> ()) {
+        let deleteUrl = apiUrl?.appendingPathComponent("\(taskId)")
+        var request = URLRequest(url: deleteUrl!)
+        request.httpMethod = "DELETE"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        URLSession.shared.dataTask(with: request) { (_, _, error) in
+            if error == nil {
+                DispatchQueue.main.async {
+                    completed()
+                }
+            } else {
+                print("Sorry, we had a trouble")
+            }
+        }.resume()
     }
 }
 

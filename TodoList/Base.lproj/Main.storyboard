@@ -39,18 +39,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="V9E-Od-0Kt">
-                                <rect key="frame" x="20" y="97" width="235" height="30"/>
-                                <color key="backgroundColor" red="0.0" green="0.58980089430000004" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" title="Get Task List">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="getTaskList:" destination="BYZ-38-t0r" eventType="touchDown" id="mOn-63-eAE"/>
-                                </connections>
-                            </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ydA-BY-Nud">
-                                <rect key="frame" x="0.0" y="152" width="375" height="515"/>
+                                <rect key="frame" x="0.0" y="102" width="375" height="565"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="BYZ-38-t0r" id="9Xw-km-Rje"/>
@@ -61,24 +51,20 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Xo-gg-rOf" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="5gJ-lb-Bxy"/>
-                            <constraint firstItem="V9E-Od-0Kt" firstAttribute="top" secondItem="6Xo-gg-rOf" secondAttribute="bottom" constant="21" id="7FF-GU-72m"/>
+                            <constraint firstItem="ydA-BY-Nud" firstAttribute="top" secondItem="Hcr-Gz-fRn" secondAttribute="bottom" constant="26" id="6CE-ME-suC"/>
                             <constraint firstItem="ydA-BY-Nud" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="Dlj-9o-f4i"/>
                             <constraint firstItem="ydA-BY-Nud" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="HIL-33-DmM"/>
-                            <constraint firstItem="V9E-Od-0Kt" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Jnw-1U-rVS"/>
                             <constraint firstItem="ydA-BY-Nud" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Jvn-wc-Y4z"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Hcr-Gz-fRn" secondAttribute="trailing" constant="20" id="KcJ-m2-08n"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="V9E-Od-0Kt" secondAttribute="trailing" constant="120" id="MgX-sg-omS"/>
                             <constraint firstItem="6Xo-gg-rOf" firstAttribute="height" secondItem="Hcr-Gz-fRn" secondAttribute="height" id="Mja-1G-DsV"/>
                             <constraint firstItem="6Xo-gg-rOf" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="NyH-uj-BcT"/>
                             <constraint firstItem="Hcr-Gz-fRn" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="pix-qQ-EpA"/>
                             <constraint firstItem="Hcr-Gz-fRn" firstAttribute="leading" secondItem="6Xo-gg-rOf" secondAttribute="trailing" constant="20" id="uTF-pE-eVx"/>
-                            <constraint firstItem="ydA-BY-Nud" firstAttribute="top" secondItem="V9E-Od-0Kt" secondAttribute="bottom" constant="25" id="vLB-j5-gSX"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
                         <outlet property="addButton" destination="Hcr-Gz-fRn" id="eYw-ps-rej"/>
-                        <outlet property="getTaskButton" destination="V9E-Od-0Kt" id="51L-Sh-xKc"/>
                         <outlet property="taskField" destination="6Xo-gg-rOf" id="Rh2-vI-QV8"/>
                         <outlet property="taskList" destination="ydA-BY-Nud" id="uGf-5x-RMD"/>
                     </connections>
